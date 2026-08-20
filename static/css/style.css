@@ -1,0 +1,1332 @@
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --bg-primary:    #0C0C0C;
+  --bg-secondary:  #141414;
+  --bg-elevated:   #1E1E1E;
+  --text-primary:  #F2EDE4;
+  --text-secondary:#A89880;
+  --accent:        #C9963C;
+  --accent-hover:  #E5B04A;
+  --border:        #2A2A2A;
+  --font-display:  'Playfair Display', serif;
+  --font-body:     'DM Sans', sans-serif;
+  --font-poetry:   'Lora', serif;
+  --font-mono:     'Space Mono', monospace;
+}
+
+/* Light mode overrides */
+html.light {
+  --bg-primary:    #F8F4EE;
+  --bg-secondary:  #EDE8E0;
+  --bg-elevated:   #FFFFFF;
+  --text-primary:  #1A1612;
+  --text-secondary:#6B5E4E;
+  --accent:        #9A6E20;
+  --accent-hover:  #B8820E;
+  --border:        #D9D0C4;
+}
+
+/* ============================================================
+   CUSTOM TOKEN UTILITIES
+   Tailwind CDN does not reliably generate extended-config
+   classes when tokens reference CSS variables. Define them
+   here so they work unconditionally.
+   ============================================================ */
+
+/* — Backgrounds — */
+.bg-bg-primary   { background-color: var(--bg-primary); }
+.bg-bg-secondary { background-color: var(--bg-secondary); }
+.bg-bg-elevated  { background-color: var(--bg-elevated); }
+.bg-gold         { background-color: var(--accent); }
+
+/* — Text colors — */
+.text-tx-primary  { color: var(--text-primary); }
+.text-tx-secondary { color: var(--text-secondary); }
+.text-gold        { color: var(--accent); }
+.text-accent      { color: var(--accent); }
+.text-bd          { color: var(--border); }
+
+/* — Border colors — */
+.border-bd        { border-color: var(--border); }
+.border-gold      { border-color: var(--accent); }
+
+/* — Font families — */
+.font-display  { font-family: var(--font-display); }
+.font-body     { font-family: var(--font-body); }
+.font-poetry   { font-family: var(--font-poetry); }
+.font-mono     { font-family: var(--font-mono); }
+
+/* — Hover variants — */
+.hover\:text-gold:hover        { color: var(--accent); }
+.hover\:border-gold:hover      { border-color: var(--accent); }
+.hover\:bg-bg-secondary:hover  { background-color: var(--bg-secondary); }
+.hover\:opacity-80:hover       { opacity: 0.8; }
+.hover\:opacity-90:hover       { opacity: 0.9; }
+
+/* — Group-hover variants — */
+.group:hover .group-hover\:bg-gold { background-color: var(--accent); }
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  background-color: var(--bg-elevated);
+  min-height: 4px;
+}
+
+/* ============================================================
+   CUSTOM SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-hover); }
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+.nav-blur {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(12, 12, 12, 0.82);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s ease;
+}
+
+html.light .nav-blur {
+  background: rgba(248, 244, 238, 0.88);
+}
+
+.nav-link {
+  position: relative;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  transition: color 0.25s ease;
+  text-decoration: none;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--text-primary);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn-gold {
+  display: inline-block;
+  background: var(--accent);
+  color: #0C0C0C;
+  font-family: var(--font-body);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  border-radius: 9999px;
+  text-decoration: none;
+  box-shadow: 0 0 24px rgba(201, 150, 60, 0.28);
+  transition: box-shadow 0.3s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.btn-gold:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 0 40px rgba(201, 150, 60, 0.55);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  display: inline-block;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--font-body);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease;
+}
+
+.btn-outline:hover {
+  background: var(--accent);
+  color: #0C0C0C;
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero-gradient {
+  background: radial-gradient(ellipse at 60% 50%, rgba(201, 150, 60, 0.07) 0%, transparent 65%),
+              radial-gradient(ellipse at 20% 80%, rgba(201, 150, 60, 0.04) 0%, transparent 50%);
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(10px); }
+}
+
+.scroll-arrow {
+  animation: bounce-slow 2.2s ease-in-out infinite;
+}
+
+/* Repeating grid texture overlay on hero */
+.hero-grid-texture {
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Initial invisible state for JS-animated hero name */
+.hero-name-init { opacity: 0; }
+
+/* ============================================================
+   ABOUT — profile photo gold offset
+   ============================================================ */
+.profile-photo-wrap {
+  position: relative;
+}
+
+.profile-photo-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: -14px;
+  right: -14px;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--accent);
+  border-radius: 1rem;
+  z-index: 0;
+  opacity: 0.55;
+}
+
+.profile-photo-wrap img {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   SPECIALTY CARDS  (collapsible — see COLLAPSIBLES below)
+   ============================================================ */
+.specialty-card {
+  position: relative;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.3s ease, transform 0.25s ease, box-shadow 0.3s ease;
+}
+
+.specialty-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(201, 150, 60, 0.12);
+}
+
+/* The whole visible face of a collapsed card is the toggle */
+.specialty-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.specialty-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  background: var(--bg-primary);
+  transition: width 0.3s ease, height 0.3s ease, background 0.3s ease;
+}
+
+.specialty-icon svg {
+  width: 60%;
+  height: 60%;
+  color: var(--accent);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+/* ── Desktop: collapsed = giant icon filling the block, no words ───────── */
+@media (min-width: 768px) {
+  .specialty-card { min-height: 15rem; }
+
+  .specialty-card:not(.is-open) .specialty-toggle {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .specialty-card:not(.is-open) .specialty-icon {
+    width: 100%;
+    height: 100%;
+    min-height: 9rem;
+    background: transparent;
+    border-radius: 0;
+  }
+
+  .specialty-card:not(.is-open) .specialty-icon svg {
+    width: 100%;
+    height: 100%;
+    max-width: 8.5rem;
+    max-height: 8.5rem;
+    stroke-width: 1.1;
+  }
+
+  /* No words in the collapsed state — just a small corner arrow */
+  .specialty-card:not(.is-open) .collapse-chevron {
+    position: absolute;
+    right: 0.9rem;
+    bottom: 0.9rem;
+    margin-left: 0;
+  }
+}
+
+/* ── Mobile: collapsed cards sit two per row, icon + arrow only ────────── */
+@media (max-width: 767px) {
+  #specialties-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .specialty-card { padding: 1rem; }
+
+  /* An open card takes the full row so its text has room */
+  .specialty-card.is-open { grid-column: 1 / -1; }
+
+  .specialty-card:not(.is-open) .specialty-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
+/* ============================================================
+   PROJECT CARDS
+   ============================================================ */
+.project-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+  border-color: rgba(201, 150, 60, 0.4);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.project-card .card-img-wrap {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+
+.project-card .card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.project-card:hover .card-img-wrap img {
+  transform: scale(1.06);
+}
+
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.project-card:hover .card-overlay {
+  opacity: 1;
+}
+
+/* Filter buttons */
+.filter-btn {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
+}
+
+.filter-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.filter-btn.active {
+  border-color: var(--accent);
+  color: #0C0C0C;
+  background: var(--accent);
+}
+
+html.light .filter-btn.active {
+  color: #F8F4EE;
+}
+
+/* Tag pills */
+.tag-pill {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  color: var(--accent);
+  background: transparent;
+}
+
+/* ── Project type badges (Personal / School / Hackathon) ────── */
+.badge-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 0.22rem 0.65rem;
+  border-radius: 9999px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.badge-type--personal {
+  color: #6EC6C6;
+  border-color: rgba(110, 198, 198, 0.35);
+  background: rgba(110, 198, 198, 0.08);
+}
+
+.badge-type--school {
+  color: #A78BFA;
+  border-color: rgba(167, 139, 250, 0.35);
+  background: rgba(167, 139, 250, 0.08);
+}
+
+.badge-type--hackathon {
+  color: #F59E0B;
+  border-color: rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+/* ── Hackathon win badge (detail page — individual award) ───── */
+.badge-win {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  padding: 0.28rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(201, 150, 60, 0.5);
+  background: rgba(201, 150, 60, 0.1);
+  color: var(--accent);
+}
+
+/* ── Win count badge (card — compact trophy + number) ───────── */
+.badge-win-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  padding: 0.22rem 0.55rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(201, 150, 60, 0.5);
+  background: rgba(201, 150, 60, 0.1);
+  color: var(--accent);
+}
+
+/* ── Coming Soon card overlay ───────────────────────────────── */
+.coming-soon-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 12, 12, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+}
+
+.coming-soon-pill {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.9rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(201, 150, 60, 0.6);
+  color: var(--accent);
+  background: rgba(12, 12, 12, 0.8);
+}
+
+/* ── Coming Soon detail page ────────────────────────────────── */
+.coming-soon-page {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 1.5rem;
+}
+
+.coming-soon-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+}
+
+.coming-soon-status::before {
+  content: '';
+  display: block;
+  width: 7px;
+  height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent);
+  animation: pulse-gold 2s ease-in-out infinite;
+}
+
+@keyframes pulse-gold {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.45; transform: scale(0.85); }
+}
+
+/* ── Collaborators ──────────────────────────────────────────── */
+.collaborator-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.collaborator-link:hover {
+  color: var(--accent);
+  border-color: rgba(201, 150, 60, 0.45);
+  background: rgba(201, 150, 60, 0.06);
+}
+
+/* LinkedIn icon inside collaborator pill */
+.collaborator-link svg {
+  flex-shrink: 0;
+}
+
+.collaborators-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+}
+
+/* GitHub source icon on project cards */
+.card-github {
+  color: var(--text-secondary);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.card-github:hover {
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* ── How to Use section ─────────────────────────────────────── */
+.how-to-use-body {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  line-height: 1.9;
+  color: var(--text-secondary);
+  white-space: pre-line;
+}
+
+/* ── Workflow image ─────────────────────────────────────────── */
+.workflow-img-wrap {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: var(--bg-elevated);
+}
+
+.workflow-img-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Live badge */
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: #4ade80;
+}
+
+.live-badge::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  background: #4ade80;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #4ade80;
+  animation: pulse-green 2s ease-in-out infinite;
+}
+
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+/* ============================================================
+   PROJECT DETAIL
+   ============================================================ */
+
+/* Gradient overlay on Format B (photos-only) hero image */
+.detail-hero-fade {
+  background: linear-gradient(to top, var(--bg-primary) 0%, transparent 60%);
+}
+
+/* Gradient overlay on poem atmospheric background image */
+.poem-bg-overlay {
+  background: linear-gradient(
+    to bottom,
+    var(--bg-primary) 0%,
+    transparent 30%,
+    var(--bg-primary) 100%
+  );
+}
+
+/* Horizontal rule inside poetry theme group headers */
+.theme-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.iframe-wrapper {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 96px);
+  min-height: 500px;
+}
+
+.iframe-wrapper iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 0.75rem;
+  background: var(--bg-elevated);
+}
+
+.iframe-blocked-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-elevated);
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Horizontal scroll gallery */
+.gallery-scroll {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.75rem;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.gallery-scroll::-webkit-scrollbar { height: 4px; }
+.gallery-scroll::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+.gallery-scroll img {
+  height: 220px;
+  width: auto;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.25s ease;
+}
+
+.gallery-scroll img:hover { transform: scale(1.02); }
+
+/* ============================================================
+   POEM GRID CARDS  (projects-style layout)
+   ============================================================ */
+.poem-grid-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.poem-grid-card:hover {
+  border-color: rgba(201, 150, 60, 0.4);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.poem-grid-card a {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Preview text panel — replaces the image in project cards */
+.poem-grid-preview {
+  position: relative;
+  padding: 1.5rem 1.5rem 0;
+  height: 168px;
+  overflow: hidden;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.poem-grid-preview-text {
+  font-family: var(--font-poetry);
+  font-size: 0.88rem;
+  line-height: 1.85;
+  color: var(--text-secondary);
+  white-space: pre-line;
+  font-style: italic;
+}
+
+/* Gradient that fades the text out at the bottom of the preview */
+.poem-grid-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: linear-gradient(to bottom, transparent, var(--bg-primary));
+}
+
+/* Footer: title + badge + date */
+.poem-grid-footer {
+  padding: 1.25rem 1.5rem 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.poem-grid-title {
+  transition: color 0.2s ease;
+}
+
+.poem-grid-card:hover .poem-grid-title {
+  color: var(--accent);
+}
+
+.poem-grid-badge {
+  display: inline-block;
+  margin-top: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  color: var(--accent);
+  background: transparent;
+}
+
+/* Theme badge: slightly different style to distinguish from collection */
+.poem-grid-badge--theme {
+  color: var(--text-secondary);
+  border-style: dashed;
+}
+
+/* ── Poetry section visibility ──────────────────────────────── */
+.poetry-section { display: block; }
+.poetry-section.hidden { display: none; }
+
+/* ============================================================
+   POETRY LIST CARDS  (poem-detail links / original list style)
+   ============================================================ */
+.poem-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-left: 3px solid transparent;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  text-decoration: none;
+  display: block;
+  transition: border-left-color 0.3s ease, border-color 0.3s ease,
+              background 0.25s ease, transform 0.25s ease;
+  color: inherit;
+}
+
+.poem-card:hover {
+  border-left-color: var(--accent);
+  border-color: rgba(201, 150, 60, 0.3);
+  background: var(--bg-secondary);
+  transform: translateX(4px);
+}
+
+.poem-preview {
+  font-family: var(--font-poetry);
+  font-size: 0.9rem;
+  line-height: 1.9;
+  color: var(--text-secondary);
+  white-space: pre-line;
+}
+
+/* Poem detail */
+.poem-body {
+  font-family: var(--font-poetry);
+  font-size: 1.15rem;
+  line-height: 2.15;
+  color: var(--text-primary);
+  white-space: pre-line;
+}
+
+/* ============================================================
+   SECTION HEADINGS
+   ============================================================ */
+.section-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover { color: var(--accent); }
+
+/* ============================================================
+   LIGHTBOX (for gallery full-view)
+   ============================================================ */
+#lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+
+#lightbox.open { display: flex; }
+
+#lightbox img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 0.5rem;
+  object-fit: contain;
+  box-shadow: 0 0 80px rgba(0,0,0,0.8);
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+.text-accent   { color: var(--accent); }
+.text-muted    { color: var(--text-secondary); }
+.font-display  { font-family: var(--font-display); }
+.font-mono     { font-family: var(--font-mono); }
+.font-poetry   { font-family: var(--font-poetry); }
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================================
+   DOCUMENTS  (resume / CV viewer)
+   ============================================================ */
+.doc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.doc-action-pair {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.doc-download {
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.doc-download:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.pdf-frame-wrap {
+  height: calc(100vh - 22rem);
+  min-height: 480px;
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  overflow: hidden;
+  background: var(--bg-elevated);
+}
+
+.pdf-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* ============================================================
+   IMAGE PLACEHOLDER  (projects with no screenshots yet)
+   Markup rather than an asset, so it follows the theme tokens.
+   ============================================================ */
+.img-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  padding: 1.25rem;
+  text-align: center;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0 10px,
+      rgba(201, 150, 60, 0.05) 10px 11px
+    ),
+    var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.img-placeholder-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--accent);
+  opacity: 0.55;
+  margin-bottom: 0.2rem;
+}
+
+.img-placeholder-title {
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  opacity: 0.85;
+  line-height: 1.25;
+}
+
+.img-placeholder-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* Inside a card the 16/9 box already sets the height */
+.card-img-wrap .img-placeholder { min-height: 0; }
+
+/* A "Coming Soon" pill already says it — don't stack text behind it */
+.card-img-wrap:has(.coming-soon-overlay) .img-placeholder-title,
+.card-img-wrap:has(.coming-soon-overlay) .img-placeholder-label { display: none; }
+
+/* Standalone panel version (empty gallery on a detail page) */
+.img-placeholder--panel {
+  min-height: 260px;
+  border: 1px dashed var(--border);
+  border-radius: 0.9rem;
+}
+
+/* ============================================================
+   GALLERY NAVIGATION ARROWS
+   ============================================================ */
+.gallery-scroller {
+  position: relative;
+}
+
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+  transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.gallery-nav svg { width: 1.1rem; height: 1.1rem; }
+
+.gallery-nav:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.gallery-nav--prev { left: -0.7rem; }
+.gallery-nav--next { right: -0.7rem; }
+
+.gallery-nav.is-disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .gallery-nav--prev { left: 0.25rem; }
+  .gallery-nav--next { right: 0.25rem; }
+}
+
+/* — Lightbox arrows + counter — */
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1010;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(242, 237, 228, 0.25);
+  background: rgba(12, 12, 12, 0.55);
+  color: #F2EDE4;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.lightbox-nav svg { width: 1.5rem; height: 1.5rem; }
+
+.lightbox-nav:hover {
+  background: rgba(12, 12, 12, 0.85);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.lightbox-nav--prev { left: 1.5rem; }
+.lightbox-nav--next { right: 1.5rem; }
+.lightbox-nav.hidden { display: none; }
+
+#lightbox-counter {
+  position: absolute;
+  bottom: 1.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1010;
+  padding: 0.3rem 0.85rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(242, 237, 228, 0.18);
+  background: rgba(12, 12, 12, 0.7);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: rgba(242, 237, 228, 0.85);
+}
+
+#lightbox-counter:empty { display: none; }
+
+@media (max-width: 640px) {
+  .lightbox-nav { width: 2.5rem; height: 2.5rem; }
+  .lightbox-nav--prev { left: 0.5rem; }
+  .lightbox-nav--next { right: 0.5rem; }
+}
+
+/* ============================================================
+   FILTER ROWS  (category + accomplishment)
+   ============================================================ */
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filter-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  min-width: 4.5rem;
+}
+
+/* ============================================================
+   COLLAPSIBLES  (profile photo + specialty cards)
+   A card is [data-collapsible]; its bar/face is
+   [data-collapse-toggle]; .is-open drives every open state.
+   ============================================================ */
+.collapse-body {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.28s ease;
+}
+
+.is-open > .collapse-body {
+  max-height: 60rem;
+  opacity: 1;
+}
+
+.specialty-card.is-open > .collapse-body > .collapse-body-inner { padding-top: 1rem; }
+
+.collapse-chevron {
+  flex-shrink: 0;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-left: auto;
+  color: var(--text-secondary);
+  transition: transform 0.3s ease, color 0.2s ease;
+}
+
+.is-open .collapse-chevron { transform: rotate(180deg); }
+[data-collapse-toggle]:hover .collapse-chevron { color: var(--accent); }
+
+/* — The little dropdown bar (profile photo) — */
+.collapse-bar {
+  display: none;          /* mobile-only; enabled in the media query below */
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.55rem 0.8rem;
+  background: none;
+  border: 0;
+  color: var(--text-primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.collapse-thumb {
+  flex-shrink: 0;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 0.55rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.collapse-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.collapse-bar-title {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* ── Mobile: the profile photo becomes a rounded dropdown card ─────────── */
+@media (max-width: 767px) {
+  .profile-block {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+
+  .profile-block .collapse-bar { display: flex; }
+  .profile-block .collapse-body-inner { padding: 0 0.8rem 0.9rem; }
+
+  /* The offset gold ring would be clipped inside the card */
+  .profile-block .profile-photo-wrap::after { display: none; }
+  .profile-block .profile-photo-wrap img { border-radius: 0.75rem; }
+}
+
+/* Desktop: no bar, photo always shown */
+@media (min-width: 768px) {
+  .profile-block > .collapse-body {
+    max-height: none;
+    opacity: 1;
+    overflow: visible;
+  }
+}
+
+/* ============================================================
+   KEYBOARD PAGE SNAPPING
+   Arrow / PageUp / PageDown step between .snap-page sections.
+   Each page fits the viewport minus the fixed 4rem nav.
+   ============================================================ */
+html { scroll-padding-top: 4rem; }
+
+.snap-page {
+  min-height: calc(100vh - 4rem);
+  min-height: calc(100svh - 4rem);
+  scroll-margin-top: 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Sections taller than the screen just scroll normally */
+.snap-page > * { max-width: 100%; }
+
+/* ============================================================
+   SCREENSHOT FALLBACK  (shown when a live preview won't embed)
+   ============================================================ */
+/* When the overlay holds screenshots it fills the panel instead of centering */
+.iframe-blocked-overlay--shots {
+  align-items: stretch;
+  justify-content: flex-start;
+  text-align: left;
+  padding: 0;
+  gap: 0;
+}
+
+.screenshot-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.screenshot-fallback-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.screenshot-fallback img {
+  width: 100%;
+  border-radius: 0.6rem;
+  border: 1px solid var(--border);
+  cursor: zoom-in;
+  transition: border-color 0.25s ease;
+}
+
+.screenshot-fallback img:hover { border-color: var(--accent); }
+
+/* 404 page */
+.error-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}

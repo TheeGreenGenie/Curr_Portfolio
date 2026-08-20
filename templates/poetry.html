@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}Poetry — Portfolio{% endblock %}
+{% block description %}A collection of original poetry — moments, observations, and ordinary things.{% endblock %}
+
+{% block content %}
+
+<!-- Poem card macro — must be defined before any call site -->
+{% macro _poem_card(poem, show_theme=none) %}
+<article class="poem-grid-card" data-aos="fade-up">
+  <a href="{{ url_for('poem_detail', slug=poem.id) }}" class="block h-full">
+
+    <!-- Preview text area -->
+    <div class="poem-grid-preview">
+      <p class="poem-grid-preview-text">{{ poem.content.split('\n')[:4] | join('\n') }}</p>
+      <div class="poem-grid-fade"></div>
+    </div>
+
+    <!-- Card footer -->
+    <div class="poem-grid-footer">
+      <div class="flex items-start justify-between gap-2 mb-2">
+        <h2 class="font-display text-xl text-tx-primary leading-snug poem-grid-title">
+          {{ poem.title }}
+        </h2>
+        <span class="font-mono text-xs text-tx-secondary flex-shrink-0 pt-1">{{ poem.date }}</span>
+      </div>
+
+      {% if poem.collection %}
+      <span class="poem-grid-badge">{{ poem.collection }}</span>
+      {% elif show_theme %}
+      <span class="poem-grid-badge poem-grid-badge--theme">{{ show_theme }}</span>
+      {% endif %}
+    </div>
+
+  </a>
+</article>
+{% endmacro %}
+
+<div class="max-w-6xl mx-auto px-6 py-24">
+
+  <!-- Page header -->
+  <div class="mb-16" data-aos="fade-up">
+    <p class="section-eyebrow mb-4">Words</p>
+    <h1 class="font-display text-5xl md:text-6xl text-tx-primary leading-none">Poetry</h1>
+    <div class="w-12 h-px bg-gold mt-6 mb-4"></div>
+    <p class="font-poetry italic text-tx-secondary text-lg leading-relaxed">
+      A collection of poems — some finished, some not. All honest.
+    </p>
+  </div>
+
+  {% if all_poems %}
+
+  <!-- ── Tab bar ──────────────────────────────────────────────── -->
+  <div class="flex flex-wrap gap-3 mb-12" id="poetry-tabs" data-aos="fade-up" data-aos-delay="80">
+
+    <button class="filter-btn active" data-poetry-tab="all">All</button>
+
+    {% for col in collections %}
+    <button class="filter-btn" data-poetry-tab="{{ col.slug }}">{{ col.name }}</button>
+    {% endfor %}
+
+    {% if has_general %}
+    <button class="filter-btn" data-poetry-tab="general">General</button>
+    {% endif %}
+
+  </div>
+
+  <!-- ── ALL tab ──────────────────────────────────────────────── -->
+  <div id="poetry-tab-all" class="poetry-section">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for poem in all_poems %}
+      {{ _poem_card(poem) }}
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ── Collection tabs ──────────────────────────────────────── -->
+  {% for col in collections %}
+  <div id="poetry-tab-{{ col.slug }}" class="poetry-section hidden">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for poem in col.poems %}
+      {{ _poem_card(poem) }}
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- ── General tab (theme-grouped) ─────────────────────────── -->
+  {% if has_general %}
+  <div id="poetry-tab-general" class="poetry-section hidden">
+    {% for group in themed_groups %}
+    <div class="mb-14">
+      <!-- Theme subheading -->
+      <div class="flex items-center gap-4 mb-6">
+        <p class="section-eyebrow">{{ group.theme }}</p>
+        <div class="theme-rule"></div>
+        <span class="font-mono text-xs text-tx-secondary">{{ group.poems | length }} poem{{ 's' if group.poems | length != 1 }}</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for poem in group.poems %}
+        {{ _poem_card(poem, show_theme=group.theme) }}
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div class="text-center py-24">
+    <p class="font-poetry italic text-tx-secondary text-xl">No poems published yet.</p>
+    <p class="text-tx-secondary text-sm mt-3 font-mono">Check back soon.</p>
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}{{ doc.title }} — Solomon Shasanmi{% endblock %}
+{% block description %}{{ doc.blurb }}{% endblock %}
+
+{% set file_url = url_for('static', filename='files/' + filename) %}
+
+{% block content %}
+
+<div class="max-w-5xl mx-auto px-6 py-12">
+
+  <!-- Back link -->
+  <a href="{{ url_for('index') }}"
+     class="inline-flex items-center gap-2 text-tx-secondary hover:text-gold transition-colors font-mono text-xs mb-8 group">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"
+         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+    </svg>
+    Home
+  </a>
+
+  <!-- Header -->
+  <div class="mb-8" data-aos="fade-up">
+    <p class="section-eyebrow mb-3">Career</p>
+    <h1 class="font-display text-5xl md:text-6xl text-tx-primary leading-none mb-4">{{ doc.title }}</h1>
+    <p class="text-tx-secondary leading-relaxed max-w-xl">{{ doc.blurb }}</p>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="flex flex-wrap items-center gap-3 mb-6" data-aos="fade-up" data-aos-delay="80">
+    <a href="{{ file_url }}" download class="btn-gold px-6 py-3 text-sm font-semibold">
+      Download {{ doc.title }}
+    </a>
+    <a href="{{ file_url }}" target="_blank" rel="noopener"
+       class="btn-outline px-6 py-3 text-sm font-semibold">
+      Open in New Tab ↗
+    </a>
+    {% if other %}
+    <a href="{{ url_for('document_view', name=other.key) }}"
+       class="btn-outline px-6 py-3 text-sm font-semibold">
+      View {{ other.title }}
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- Embedded PDF -->
+  <div class="pdf-frame-wrap" data-aos="fade-up" data-aos-delay="120">
+    <iframe class="pdf-frame" src="{{ file_url }}#view=FitH"
+            title="{{ doc.title }} preview"></iframe>
+  </div>
+
+  <p class="font-mono text-xs text-tx-secondary mt-4 text-center">
+    Preview not loading? Some browsers block inline PDFs —
+    <a href="{{ file_url }}" target="_blank" rel="noopener" class="footer-link underline">open it in a new tab</a>.
+  </p>
+
+</div>
+
+{% endblock %}

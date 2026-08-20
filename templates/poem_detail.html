@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}{{ poem.title }} — Poetry{% endblock %}
+{% block description %}{{ poem.content[:120] | replace('\n', ' ') }}{% endblock %}
+
+{% block content %}
+
+<!-- Optional atmospheric background image -->
+{% if poem.background_image %}
+<div class="fixed inset-0 -z-10 pointer-events-none">
+  <img src="{{ url_for('static', filename='images/' + poem.background_image) }}"
+       alt="" class="w-full h-full object-cover opacity-[0.07]">
+  <div class="absolute inset-0 poem-bg-overlay"></div>
+</div>
+{% endif %}
+
+<div class="max-w-[660px] mx-auto px-6 py-24">
+
+  <!-- Back link -->
+  <a href="{{ url_for('poetry') }}"
+     class="inline-flex items-center gap-2 text-tx-secondary hover:text-gold transition-colors font-mono text-xs mb-14 group">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+    </svg>
+    All Poems
+  </a>
+
+  <!-- Collection label -->
+  {% if poem.collection %}
+  <p class="section-eyebrow mb-4">{{ poem.collection }}</p>
+  {% endif %}
+
+  <!-- Title -->
+  <h1 class="font-display text-5xl md:text-6xl text-tx-primary leading-none mb-3" data-aos="fade-up">
+    {{ poem.title }}
+  </h1>
+
+  <!-- Date -->
+  <p class="font-mono text-xs text-tx-secondary mb-14" data-aos="fade-up" data-aos-delay="80">
+    {{ poem.date }}
+  </p>
+
+  <hr class="divider mb-14">
+
+  <!-- Poem body -->
+  <div class="poem-body" data-aos="fade-up" data-aos-delay="140">
+    {{ poem.content }}
+  </div>
+
+  <!-- End mark -->
+  <div class="mt-16 flex items-center gap-4" data-aos="fade-up">
+    <div class="w-6 h-px bg-gold"></div>
+    <span class="font-mono text-xs text-tx-secondary">{{ poem.date }}</span>
+  </div>
+
+  <!-- Prev / Next navigation -->
+  <div class="mt-20 pt-8 border-t border-bd grid grid-cols-2 gap-4">
+
+    {% if prev_poem %}
+    <a href="{{ url_for('poem_detail', slug=prev_poem.id) }}" class="group">
+      <p class="font-mono text-xs text-tx-secondary mb-1.5 flex items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Previous
+      </p>
+      <p class="font-display text-lg text-tx-primary group-hover:text-gold transition-colors leading-snug">
+        {{ prev_poem.title }}
+      </p>
+    </a>
+    {% else %}
+    <div></div>
+    {% endif %}
+
+    {% if next_poem %}
+    <a href="{{ url_for('poem_detail', slug=next_poem.id) }}" class="group text-right">
+      <p class="font-mono text-xs text-tx-secondary mb-1.5 flex items-center justify-end gap-1">
+        Next
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+        </svg>
+      </p>
+      <p class="font-display text-lg text-tx-primary group-hover:text-gold transition-colors leading-snug">
+        {{ next_poem.title }}
+      </p>
+    </a>
+    {% else %}
+    <div></div>
+    {% endif %}
+
+  </div>
+
+</div>
+
+{% endblock %}

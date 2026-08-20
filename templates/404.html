@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Page Not Found — Portfolio{% endblock %}
+
+{% block content %}
+<div class="error-page">
+  <p class="section-eyebrow mb-6">404</p>
+  <h1 class="font-display text-6xl md:text-7xl text-tx-primary mb-4">Lost.</h1>
+  <p class="font-poetry italic text-tx-secondary text-lg mb-10 max-w-sm text-center">
+    This page doesn't exist — or maybe it used to and is gone now. Both feel the same.
+  </p>
+  <a href="{{ url_for('index') }}" class="btn-gold px-8 py-3 text-sm font-semibold">
+    Go Home
+  </a>
+</div>
+{% endblock %}
