@@ -1333,6 +1333,21 @@ html { scroll-padding-top: 4rem; }
 /* Sections taller than the screen just scroll normally */
 .snap-page > * { max-width: 100%; }
 
+/* Touch devices: native CSS scroll-snap instead of JS. iOS Safari (and
+   touch scrolling generally) runs on its own compositor-thread momentum
+   that a JS touchmove handler can't reliably override — CSS snap is
+   built to cooperate with that momentum rather than fight it. */
+@media (hover: none) and (pointer: coarse) {
+  html {
+    scroll-snap-type: y mandatory;
+  }
+
+  .snap-page {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+}
+
 /* ============================================================
    SCREENSHOT FALLBACK  (shown when a live preview won't embed)
    ============================================================ */

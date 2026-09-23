@@ -544,47 +544,14 @@ document.addEventListener('DOMContentLoaded', function () {
         busyUntil = goToStop(target);
       }, { passive: false });
 
-      // Touch swipe — same one-swipe-one-stop behavior as wheel, reusing
-      // the same intermediate stops for sections taller than the screen.
-      var touchStartY = null;
-      var touchHandled = false;
-
-      window.addEventListener('touchstart', function (e) {
-        if (e.touches.length !== 1 || overlayOwnsInput()) { touchStartY = null; return; }
-        // Let taps on buttons/links/collapsibles behave normally — only
-        // hijack swipes that start on plain page background.
-        if (e.target.closest('button, a, input, textarea, select, [data-collapse-toggle], #specialty-modal')) {
-          touchStartY = null;
-          return;
-        }
-        touchStartY = e.touches[0].clientY;
-        touchHandled = false;
-      }, { passive: true });
-
-      window.addEventListener('touchmove', function (e) {
-        if (touchStartY === null || touchHandled) return;
-        if (overlayOwnsInput()) { touchStartY = null; return; }
-
-        var now = Date.now();
-        if (now < busyUntil) { e.preventDefault(); return; }
-
-        var dy = touchStartY - e.touches[0].clientY;
-        if (Math.abs(dy) < 30) return;
-
-        if (stops.length < 2) buildStops();
-        var dir = dy > 0 ? 1 : -1;
-        var target = nextStop(dir);
-        touchHandled = true;
-        if (target === null) return;         // at the end — allow native scroll
-
-        e.preventDefault();
-        busyUntil = goToStop(target);
-      }, { passive: false });
-
-      window.addEventListener('touchend', function () {
-        touchStartY = null;
-        touchHandled = false;
-      });
+      // Touch swipe is intentionally NOT hijacked with JS here. iOS Safari
+      // runs touch scrolling with its own inertia on the compositor thread —
+      // preventDefault on touchmove only blocks the finger-down phase, not
+      // the momentum that keeps playing after touchend, so a JS-driven
+      // window.scrollTo() gets dragged away right after it lands. CSS
+      // scroll-snap integrates with that native momentum instead of
+      // fighting it, so touch snapping is handled in style.css
+      // (`@media (hover: none) and (pointer: coarse)`) rather than here.
     }
 
     // Keep stops in sync with the real layout
