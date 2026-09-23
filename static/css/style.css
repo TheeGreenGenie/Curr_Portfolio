@@ -244,7 +244,13 @@ html.light .nav-blur {
   border-radius: 0.75rem;
   padding: 1.5rem;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
   transition: border-color 0.3s ease, transform 0.25s ease, box-shadow 0.3s ease;
 }
 
@@ -252,21 +258,6 @@ html.light .nav-blur {
   border-color: var(--accent);
   transform: translateY(-4px);
   box-shadow: 0 8px 32px rgba(201, 150, 60, 0.12);
-}
-
-/* The whole visible face of a collapsed card is the toggle */
-.specialty-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  width: 100%;
-  padding: 0;
-  background: none;
-  border: 0;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
 }
 
 .specialty-icon {
@@ -288,42 +279,43 @@ html.light .nav-blur {
   transition: width 0.3s ease, height 0.3s ease;
 }
 
-/* ── Desktop: collapsed = giant icon filling the block, no words ───────── */
+/* ── Desktop: compact icon tile, no words ───────── */
 @media (min-width: 768px) {
-  .specialty-card { min-height: 15rem; }
-
-  .specialty-card:not(.is-open) .specialty-toggle {
-    flex: 1;
+  .specialty-card {
+    min-height: 8.25rem;
+    padding: 1.3rem;
     flex-direction: column;
     justify-content: center;
   }
 
-  .specialty-card:not(.is-open) .specialty-icon {
+  .specialty-icon {
     width: 100%;
     height: 100%;
-    min-height: 9rem;
+    min-height: 3.75rem;
     background: transparent;
     border-radius: 0;
   }
 
-  .specialty-card:not(.is-open) .specialty-icon svg {
+  .specialty-icon svg {
     width: 100%;
     height: 100%;
-    max-width: 8.5rem;
-    max-height: 8.5rem;
+    max-width: 3.4rem;
+    max-height: 3.4rem;
     stroke-width: 1.1;
   }
 
-  /* No words in the collapsed state — just a small corner arrow */
-  .specialty-card:not(.is-open) .collapse-chevron {
+  /* No words shown — just a small corner arrow */
+  .specialty-card .collapse-chevron {
     position: absolute;
-    right: 0.9rem;
-    bottom: 0.9rem;
+    right: 0.7rem;
+    bottom: 0.6rem;
     margin-left: 0;
+    width: 0.85rem;
+    height: 0.85rem;
   }
 }
 
-/* ── Mobile: collapsed cards sit two per row, icon + arrow only ────────── */
+/* ── Mobile: cards sit two per row, icon + arrow only ────────── */
 @media (max-width: 767px) {
   #specialties-grid {
     display: grid;
@@ -331,14 +323,11 @@ html.light .nav-blur {
     gap: 0.75rem;
   }
 
-  .specialty-card { padding: 1rem; }
+  .specialty-card { padding: 0.975rem; }
 
-  /* An open card takes the full row so its text has room */
-  .specialty-card.is-open { grid-column: 1 / -1; }
-
-  .specialty-card:not(.is-open) .specialty-icon {
-    width: 2.75rem;
-    height: 2.75rem;
+  .specialty-icon {
+    width: 3.4rem;
+    height: 3.4rem;
   }
 }
 
@@ -1174,18 +1163,82 @@ html.light .filter-btn.active {
    [data-collapse-toggle]; .is-open drives every open state.
    ============================================================ */
 .collapse-body {
-  max-height: 0;
+  display: grid;
+  grid-template-rows: 0fr;
   opacity: 0;
   overflow: hidden;
-  transition: max-height 0.4s ease, opacity 0.28s ease;
+  transition: grid-template-rows 0.35s ease, opacity 0.25s ease;
 }
 
+.collapse-body > .collapse-body-inner { min-height: 0; overflow: hidden; }
+
 .is-open > .collapse-body {
-  max-height: 60rem;
+  grid-template-rows: 1fr;
   opacity: 1;
 }
 
-.specialty-card.is-open > .collapse-body > .collapse-body-inner { padding-top: 1rem; }
+/* ── Specialty card detail: a centered modal, never part of page flow ──
+   Opening it can never grow the section or push it off-screen, and it's
+   sized relative to the viewport so it always fits, mobile or desktop. */
+.specialty-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 90;
+}
+
+.specialty-backdrop.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.specialty-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: min(90vw, 26rem);
+  max-height: min(80vh, 32rem);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  overflow-y: auto;
+  padding: 1.75rem 1.5rem 1.5rem;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 95;
+  transform: translate(-50%, -50%) scale(0.96);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
+}
+
+.specialty-modal.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s;
+}
+
+.specialty-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.6rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--text-secondary);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.specialty-close:hover { color: var(--accent); }
 
 .collapse-chevron {
   flex-shrink: 0;
@@ -1255,7 +1308,7 @@ html.light .filter-btn.active {
 /* Desktop: no bar, photo always shown */
 @media (min-width: 768px) {
   .profile-block > .collapse-body {
-    max-height: none;
+    grid-template-rows: 1fr;
     opacity: 1;
     overflow: visible;
   }

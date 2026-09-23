@@ -137,14 +137,14 @@
 <!-- ================================================================
      SPECIALTIES
      ================================================================ -->
-<section data-snap class="snap-page max-w-6xl mx-auto px-6 py-20">
-  <div class="text-center mb-14" data-aos="fade-up">
-    <p class="section-eyebrow mb-3">What I Do</p>
-    <h2 class="font-display text-4xl md:text-5xl text-tx-primary">Specialties</h2>
-    <p class="font-mono text-[0.65rem] tracking-widest uppercase text-tx-secondary mt-3">Tap a card to read more</p>
+<section data-snap class="snap-page max-w-6xl mx-auto px-6 py-4 md:py-7">
+  <div class="text-center mb-3 md:mb-5" data-aos="fade-up">
+    <p class="section-eyebrow mb-2">What I Do</p>
+    <h2 class="font-display text-2xl sm:text-3xl md:text-4xl text-tx-primary">Specialties</h2>
+    <p class="font-mono text-[0.65rem] tracking-widest uppercase text-tx-secondary mt-2">Tap a card to read more</p>
   </div>
 
-  <div id="specialties-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+  <div id="specialties-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3">
 
     {% set specialties = [
       {
@@ -180,29 +180,30 @@
     ] %}
 
     {% for item in specialties %}
-    <div class="specialty-card" data-collapsible data-aos="fade-up" data-aos-delay="{{ loop.index0 * 80 }}">
-
-      <button type="button" class="specialty-toggle" data-collapse-toggle
-              aria-expanded="false" aria-controls="specialty-body-{{ loop.index }}">
-        <span class="specialty-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-               stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            {{ item.icon | safe }}
-          </svg>
-        </span>
-        <span class="sr-only">{{ item.title }}</span>
-        {{ chevron() }}
-      </button>
-
-      <div class="collapse-body" id="specialty-body-{{ loop.index }}">
-        <div class="collapse-body-inner">
-          <h3 class="font-display text-lg mb-2 text-tx-primary">{{ item.title }}</h3>
-          <p class="text-tx-secondary text-sm leading-relaxed">{{ item.desc }}</p>
-        </div>
-      </div>
-    </div>
+    <button type="button" class="specialty-card" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 80 }}"
+            aria-haspopup="dialog" aria-expanded="false"
+            data-specialty-title="{{ item.title }}" data-specialty-desc="{{ item.desc }}">
+      <span class="specialty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+             stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          {{ item.icon | safe }}
+        </svg>
+      </span>
+      <span class="sr-only">{{ item.title }}</span>
+      {{ chevron() }}
+    </button>
     {% endfor %}
 
+  </div>
+
+  <!-- Shared detail modal — one instance, populated on click. Living
+       outside any [data-aos] element keeps its position:fixed anchored
+       to the real viewport instead of an AOS-transformed ancestor. -->
+  <div class="specialty-backdrop" id="specialty-backdrop"></div>
+  <div class="specialty-modal" id="specialty-modal" role="dialog" aria-modal="true" aria-labelledby="specialty-modal-title">
+    <button type="button" class="specialty-close" id="specialty-modal-close" aria-label="Close">&times;</button>
+    <h3 class="font-display text-lg mb-2 text-tx-primary" id="specialty-modal-title"></h3>
+    <p class="text-tx-secondary text-sm leading-relaxed" id="specialty-modal-desc"></p>
   </div>
 </section>
 

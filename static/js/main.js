@@ -353,13 +353,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ----------------------------------------------------------
-     6. Collapsibles (profile photo + specialty cards)
+     6a. Collapsibles (profile photo dropdown, mobile)
      Card = [data-collapsible], its bar/face = [data-collapse-toggle].
      Closed by default; click toggles open, click again closes.
      ---------------------------------------------------------- */
-  var collapseToggles = document.querySelectorAll('[data-collapse-toggle]');
-
-  collapseToggles.forEach(function (toggle) {
+  document.querySelectorAll('[data-collapse-toggle]').forEach(function (toggle) {
     var card = toggle.closest('[data-collapsible]');
     if (!card) return;
 
@@ -367,10 +365,57 @@ document.addEventListener('DOMContentLoaded', function () {
       var willOpen = !card.classList.contains('is-open');
       card.classList.toggle('is-open', willOpen);
       toggle.setAttribute('aria-expanded', String(willOpen));
-      // Section heights just changed — page snap stops need rebuilding
+      // Section height just changed — page snap stops need rebuilding
       window.dispatchEvent(new Event('layoutchange'));
     });
   });
+
+  /* ----------------------------------------------------------
+     6b. Specialty cards — one shared detail modal, populated per
+     click. Living outside every card keeps it a fixed-position
+     overlay clamped to the real viewport (never part of page
+     flow), so opening one can never grow the page or spill off
+     screen, on mobile or desktop, no matter how many are opened
+     in a row.
+     ---------------------------------------------------------- */
+  var specialtyModal = document.getElementById('specialty-modal');
+  var specialtyBackdrop = document.getElementById('specialty-backdrop');
+
+  if (specialtyModal && specialtyBackdrop) {
+    var modalTitle = document.getElementById('specialty-modal-title');
+    var modalDesc = document.getElementById('specialty-modal-desc');
+    var modalClose = document.getElementById('specialty-modal-close');
+    var activeCard = null;
+
+    function openSpecialty(card) {
+      activeCard = card;
+      modalTitle.textContent = card.dataset.specialtyTitle || '';
+      modalDesc.textContent = card.dataset.specialtyDesc || '';
+      specialtyModal.classList.add('is-open');
+      specialtyBackdrop.classList.add('is-visible');
+      card.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeSpecialty() {
+      if (activeCard) activeCard.setAttribute('aria-expanded', 'false');
+      activeCard = null;
+      specialtyModal.classList.remove('is-open');
+      specialtyBackdrop.classList.remove('is-visible');
+    }
+
+    document.querySelectorAll('.specialty-card').forEach(function (card) {
+      card.addEventListener('click', function () {
+        if (activeCard === card) { closeSpecialty(); }
+        else { openSpecialty(card); }
+      });
+    });
+
+    modalClose.addEventListener('click', closeSpecialty);
+    specialtyBackdrop.addEventListener('click', closeSpecialty);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && activeCard) closeSpecialty();
+    });
+  }
 
   /* ----------------------------------------------------------
      7. Keyboard page snapping
@@ -436,15 +481,28 @@ document.addEventListener('DOMContentLoaded', function () {
       return null;
     }
 
+    function overlayOwnsInput() {
+      var lightbox = document.getElementById('lightbox');
+      if (lightbox && lightbox.classList.contains('open')) return true;
+      var menu = document.getElementById('mobile-menu');
+      if (menu && !menu.classList.contains('hidden')) return true;
+      var specialty = document.getElementById('specialty-modal');
+      if (specialty && specialty.classList.contains('is-open')) return true;
+      return false;
+    }
+
+    function goToStop(target) {
+      var now = Date.now();
+      pendingTarget = target;
+      pendingUntil  = now + 700;
+      window.scrollTo({ top: target, behavior: 'smooth' });
+      return now + 700;
+    }
+
     document.addEventListener('keydown', function (e) {
       if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
       if (isTypingTarget(e.target)) return;
-
-      // Don't hijack while an overlay owns the keyboard
-      var lightbox = document.getElementById('lightbox');
-      if (lightbox && lightbox.classList.contains('open')) return;
-      var menu = document.getElementById('mobile-menu');
-      if (menu && !menu.classList.contains('hidden')) return;
+      if (overlayOwnsInput()) return;
 
       var dir = 0;
       if (e.key === 'ArrowDown' || e.key === 'PageDown') dir = 1;
@@ -457,10 +515,77 @@ document.addEventListener('DOMContentLoaded', function () {
       if (target === null) return;      // at the end — let the browser handle it
 
       e.preventDefault();
-      pendingTarget = target;
-      pendingUntil  = Date.now() + 700;
-      window.scrollTo({ top: target, behavior: 'smooth' });
+      goToStop(target);
     });
+
+    // Only wire up wheel/touch snapping on pages that actually have
+    // full-screen snap sections (the home page).
+    var hasSnapPages = document.querySelectorAll('main [data-snap]').length > 0;
+
+    if (hasSnapPages) {
+      var busyUntil = 0;
+
+      // Mouse wheel / trackpad — one notch/swipe steps one stop, then
+      // swallows further wheel events until the smooth scroll settles.
+      window.addEventListener('wheel', function (e) {
+        if (e.ctrlKey) return;               // pinch-zoom
+        if (overlayOwnsInput()) return;
+
+        var now = Date.now();
+        if (now < busyUntil) { e.preventDefault(); return; }
+        if (Math.abs(e.deltaY) < 4) return;
+
+        if (stops.length < 2) buildStops();
+        var dir = e.deltaY > 0 ? 1 : -1;
+        var target = nextStop(dir);
+        if (target === null) return;         // at the end — allow native scroll
+
+        e.preventDefault();
+        busyUntil = goToStop(target);
+      }, { passive: false });
+
+      // Touch swipe — same one-swipe-one-stop behavior as wheel, reusing
+      // the same intermediate stops for sections taller than the screen.
+      var touchStartY = null;
+      var touchHandled = false;
+
+      window.addEventListener('touchstart', function (e) {
+        if (e.touches.length !== 1 || overlayOwnsInput()) { touchStartY = null; return; }
+        // Let taps on buttons/links/collapsibles behave normally — only
+        // hijack swipes that start on plain page background.
+        if (e.target.closest('button, a, input, textarea, select, [data-collapse-toggle], #specialty-modal')) {
+          touchStartY = null;
+          return;
+        }
+        touchStartY = e.touches[0].clientY;
+        touchHandled = false;
+      }, { passive: true });
+
+      window.addEventListener('touchmove', function (e) {
+        if (touchStartY === null || touchHandled) return;
+        if (overlayOwnsInput()) { touchStartY = null; return; }
+
+        var now = Date.now();
+        if (now < busyUntil) { e.preventDefault(); return; }
+
+        var dy = touchStartY - e.touches[0].clientY;
+        if (Math.abs(dy) < 30) return;
+
+        if (stops.length < 2) buildStops();
+        var dir = dy > 0 ? 1 : -1;
+        var target = nextStop(dir);
+        touchHandled = true;
+        if (target === null) return;         // at the end — allow native scroll
+
+        e.preventDefault();
+        busyUntil = goToStop(target);
+      }, { passive: false });
+
+      window.addEventListener('touchend', function () {
+        touchStartY = null;
+        touchHandled = false;
+      });
+    }
 
     // Keep stops in sync with the real layout
     var rebuildTimer;
